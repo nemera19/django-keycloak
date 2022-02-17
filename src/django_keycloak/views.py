@@ -20,6 +20,7 @@ from django.http.response import (
     HttpResponseRedirect
 )
 from django.urls.base import reverse
+from django.utils.translation import get_language
 from django.views.generic.base import (
     RedirectView,
     TemplateView
@@ -49,7 +50,9 @@ class Login(RedirectView):
                 # scope='openid given_name family_name email',
                 state=str(nonce.state)
             )
-
+        current_language = get_language()
+        authorization_url = authorization_url + '&ui_locales=' + current_language
+        
         if self.request.realm.server.internal_url:
             authorization_url = authorization_url.replace(
                 self.request.realm.server.internal_url,
