@@ -51,7 +51,7 @@ class Login(RedirectView):
                 state=str(nonce.state)
             )
         current_language = get_language()
-        authorization_url = authorization_url + '&kc_locale=' + current_language
+        authorization_url = authorization_url + '&ui_locales=' + current_language
         
         if self.request.realm.server.internal_url:
             authorization_url = authorization_url.replace(
