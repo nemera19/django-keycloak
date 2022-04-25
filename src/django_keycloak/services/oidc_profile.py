@@ -226,16 +226,17 @@ def _update_or_create(client, token_response, initiate_time):
 
     headers = {'authorization': 'Bearer ' + token_response['access_token']}
     user_data_res = requests.get(
-        "https://tenant-manager.prod.cloud.code-de.org/api/users/me", headers=headers
+        TM_API_URL, headers=headers
     )
-    user_data = json.loads(user_data_res.content)
+    if user_data_res.status_code == 200:
+        user_data = json.loads(user_data_res.content)
 
-    if not token_object.get("given_name", ""):
+        if not token_object.get("given_name", ""):
 
-        token_object["given_name"], token_object["family_name"] = (
-            user_data["first_name"],
-            user_data["last_name"],
-        )
+            token_object["given_name"], token_object["family_name"] = (
+                user_data["first_name"],
+                user_data["last_name"],
+            )
 
     oidc_profile = update_or_create_user_and_oidc_profile(
         client=client,
