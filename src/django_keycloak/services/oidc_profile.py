@@ -22,7 +22,9 @@ import django_keycloak.services.realm
 
 logger = logging.getLogger(__name__)
 
+
 TM_API_URL = os.environ.get("TM_API_URL", "")
+
 
 def get_openid_connect_profile_model():
     """
