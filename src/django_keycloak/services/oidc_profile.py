@@ -1,8 +1,11 @@
+import os
+import json
 from datetime import timedelta
 
 import logging
 
 from django.apps import apps as django_apps
+import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
@@ -18,6 +21,9 @@ from django_keycloak.remote_user import KeycloakRemoteUser
 import django_keycloak.services.realm
 
 logger = logging.getLogger(__name__)
+
+
+TM_API_URL = os.environ.get("TM_API_URL", "")
 
 
 def get_openid_connect_profile_model():
@@ -221,6 +227,20 @@ def _update_or_create(client, token_response, initiate_time):
             'id_token_signing_alg_values_supported'],
         issuer=issuer
     )
+    if TM_API_URL:
+        headers = {'authorization': 'Bearer ' + token_response['access_token']}
+        user_data_res = requests.get(
+            TM_API_URL, headers=headers
+        )
+        if user_data_res.status_code == 200:
+            user_data = json.loads(user_data_res.content)
+
+            if not token_object.get("given_name", ""):
+
+                token_object["given_name"], token_object["family_name"] = (
+                    user_data["first_name"],
+                    user_data["last_name"],
+                )
 
     oidc_profile = update_or_create_user_and_oidc_profile(
         client=client,
