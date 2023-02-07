@@ -14,11 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import path
+
 
 from django_keycloak import views
 
 urlpatterns = [
     url(r'^login$', views.Login.as_view(), name='keycloak_login'),
+    path('login/<str:kc_idp_hint>/', views.Login.as_view(), name='keycloak_login'),
     url(r'^login-complete$', views.LoginComplete.as_view(),
         name='keycloak_login_complete'),
     url(r'^logout$', views.Logout.as_view(), name='keycloak_logout'),

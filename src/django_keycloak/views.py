@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class Login(RedirectView):
 
-    def get_redirect_url(self, *args, **kwargs):
+    def get_redirect_url(self, kc_idp_hint='', *args, **kwargs):
 
         nonce = Nonce.objects.create(
             redirect_uri=self.request.build_absolute_uri(
@@ -59,6 +59,10 @@ class Login(RedirectView):
                 self.request.realm.server.url,
                 1
             )
+
+        if kc_idp_hint:
+            authorization_url = authorization_url + '&kc_idp_hint=' + kc_idp_hint
+
 
         logger.debug(authorization_url)
 
